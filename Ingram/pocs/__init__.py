@@ -6,8 +6,8 @@ from .base import POCTemplate
 
 
 for file in os.listdir(os.path.dirname(__file__)):
-    if (file_name := file.split('.')[0]) not in ['__init__', 'base']:
-        importlib.import_module(f".{file_name}", 'Ingram.pocs')
+    if (file_name := file.split(".")[0]) not in ["__init__", "base"]:
+        importlib.import_module(f".{file_name}", "Ingram.pocs")
 
 
 def get_poc_dict(config):

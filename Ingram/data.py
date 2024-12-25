@@ -1,4 +1,5 @@
 """数据流"""
+
 import hashlib
 import os
 import time
@@ -20,7 +21,9 @@ class Data:
         self.config = config
         self.create_time = timer.get_time_stamp()
         self.runned_time = 0
-        self.taskid = hashlib.md5((self.config.in_file + self.config.out_dir).encode('utf-8')).hexdigest()
+        self.taskid = hashlib.md5(
+            (self.config.in_file + self.config.out_dir).encode("utf-8")
+        ).hexdigest()
 
         self.total = 0
         self.done = 0
@@ -39,26 +42,26 @@ class Data:
         # done & found & run time
         state_file = os.path.join(self.config.out_dir, f".{self.taskid}")
         if os.path.exists(state_file):
-            with open(state_file, 'r') as f:
+            with open(state_file, "r") as f:
                 if line := f.readline().strip():
-                    _done, _found, _runned_time = line.split(',')
+                    _done, _found, _runned_time = line.split(",")
                     self.done = int(_done)
                     self.found = int(_found)
                     self.runned_time = float(_runned_time)
 
     def _cal_total(self):
         """计算目标总数"""
-        with open(self.config.in_file, 'r') as f:
+        with open(self.config.in_file, "r") as f:
             for line in f:
-                if (strip_line := line.strip()) and not line.startswith('#'):
+                if (strip_line := line.strip()) and not line.startswith("#"):
                     self.add_total(net.get_ip_seg_len(strip_line))
 
     def _generate_ip(self):
         current, remain = 0, []
-        with open(self.config.in_file, 'r') as f:
+        with open(self.config.in_file, "r") as f:
             if self.done:
                 for line in f:
-                    if (strip_line := line.strip()) and not line.startswith('#'):
+                    if (strip_line := line.strip()) and not line.startswith("#"):
                         current += net.get_ip_seg_len(strip_line)
                         if current == self.done:
                             break
@@ -66,21 +69,25 @@ class Data:
                             continue
                         else:
                             ips = net.get_all_ip(strip_line)
-                            remain = ips[(self.done - current):]
+                            remain = ips[(self.done - current) :]
                             break
                 for ip in remain:
                     yield ip
 
             for line in f:
-                if (strip_line := line.strip()) and not line.startswith('#'):
+                if (strip_line := line.strip()) and not line.startswith("#"):
                     for ip in net.get_all_ip(strip_line):
                         yield ip
 
     def preprocess(self):
         """预处理"""
         # 打开记录结果的文件
-        self.vulnerable = open(os.path.join(self.config.out_dir, self.config.vulnerable), 'a')
-        self.not_vulneralbe = open(os.path.join(self.config.out_dir, self.config.not_vulnerable), 'a')
+        self.vulnerable = open(
+            os.path.join(self.config.out_dir, self.config.vulnerable), "a"
+        )
+        self.not_vulneralbe = open(
+            os.path.join(self.config.out_dir, self.config.not_vulnerable), "a"
+        )
 
         self._load_state_from_disk()
 
@@ -116,19 +123,21 @@ class Data:
 
     def add_vulnerable(self, item):
         with self.vulnerable_lock:
-            self.vulnerable.writelines(','.join(item) + '\n')
+            self.vulnerable.writelines(",".join(item) + "\n")
             self.vulnerable.flush()
 
     def add_not_vulnerable(self, item):
         with self.not_vulneralbe_lock:
-            self.not_vulneralbe.writelines(','.join(item) + '\n')
+            self.not_vulneralbe.writelines(",".join(item) + "\n")
             self.not_vulneralbe.flush()
 
     def record_running_state(self):
         # 每隔 20 个记录一下当前运行状态
         if self.done % 20 == 0:
-            with open(os.path.join(self.config.out_dir, f".{self.taskid}"), 'w') as f:
-                f.write(f"{str(self.done)},{str(self.found)},{self.runned_time + timer.get_time_stamp() - self.create_time}")
+            with open(os.path.join(self.config.out_dir, f".{self.taskid}"), "w") as f:
+                f.write(
+                    f"{str(self.done)},{str(self.found)},{self.runned_time + timer.get_time_stamp() - self.create_time}"
+                )
 
     def __del__(self):
         try:  # if dont use try, sys.exit() may cause error
@@ -191,4 +200,4 @@ class SnapshotPipeline:
             self.workers.submit(self._snapshot, exploit_func, results)
             with self.task_count_lock:
                 self.task_count += 1
-            time.sleep(.1)
+            time.sleep(0.1)

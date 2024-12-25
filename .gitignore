@@ -1,5 +1,48 @@
-.git
-.DS_store
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# Output directories
+output/
+snapshots/
+results/
+
+# Python
 __pycache__/
-/out/
-/test*
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Logs
+*.log
+log.txt
+*.csv
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Project specific
+not_vulnerable.csv
+results.csv
+.*.json
+dhConsole.json
